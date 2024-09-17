@@ -3,6 +3,7 @@ import {
   getStudentById,
   createStudent,
   deleteStudent,
+  updateStudents,
 } from '../services/students.js';
 import createHttpError from 'http-errors';
 
@@ -43,7 +44,7 @@ export const createStudentController = async (req, res) => {
   });
 };
 
-export const deleteStudentController = async (req, res) => {
+export const deleteStudentController = async (req, res, next) => {
   const { id } = req.params;
   const student = await deleteStudent(id);
 
@@ -52,4 +53,36 @@ export const deleteStudentController = async (req, res) => {
     return;
   }
   res.status(204).send();
+};
+
+export const upsertStudentController = async (req, res, next) => {
+  const { id } = req.params;
+  const result = await updateStudents(id, req.body, { upsert: true });
+
+  if (!result) {
+    next(createHttpError(404, 'Student not found'));
+    return;
+  }
+  const status = result.isNew ? 201 : 200;
+
+  res.status(status).json({
+    status,
+    message: 'Student upserted successfully',
+    data: result.student,
+  });
+};
+
+export const patchStudentController = async (req, res) => {
+  const { id } = req.params;
+  const result = await updateStudents(id, req.body);
+
+  if (!result) {
+    next(createHttpError(404, 'Student not found'));
+    return;
+  }
+  res.json({
+    status: 200,
+    message: 'Student patched successfully',
+    data: result.student,
+  });
 };
