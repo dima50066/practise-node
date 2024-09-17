@@ -1,11 +1,33 @@
-import { StudentsCollection } from '../db/models/students';
+import { StudentsCollection } from '../db/models/students.js';
 
 export const getAllStudents = async () => {
-  const students = await StudentsCollection.find();
-  return students;
+  try {
+    const students = await StudentsCollection.find();
+    console.log('Fetched all students', students);
+
+    if (!students) {
+      throw new Error('No students found');
+    }
+
+    return students;
+  } catch (err) {
+    console.error('Failed to fetch students', err);
+    throw err;
+  }
 };
 
 export const getStudentById = async (id) => {
-  const student = await StudentsCollection.findById(studentId);
-  return student;
+  try {
+    const student = await StudentsCollection.findById(id);
+    console.log('Fetched student', student);
+
+    if (!student) {
+      throw new Error('Student not found');
+    }
+
+    return student;
+  } catch (err) {
+    console.error('Failed to fetch student', err);
+    throw err;
+  }
 };
