@@ -5,7 +5,9 @@ import pino from 'pino-http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { env } from './utils/env.js';
-import { getAllStudents, getStudentById } from './services/students.js';
+import studentsRouter from './routers/students.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 dotenv.config();
 
@@ -32,47 +34,18 @@ export const startServer = () => {
     });
   });
 
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-
-  app.get('/students', async (req, res) => {
-    try {
-      const students = await getAllStudents();
-      if (!students || students.length === 0) {
-        return res.status(404).json({ message: 'No students found' });
-      }
-      res.status(200).json({ data: students });
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching students', error });
-    }
-  });
-
-  app.get('/students/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const student = await getStudentById(id);
-      if (!student) {
-        res.status(404).json({ message: 'Student not found' });
-      } else {
-        res.status(200).json({ data: student });
-      }
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: 'Error fetching contact by ID ${id}', error });
-    }
-  });
+  app.use(studentsRouter);
 
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
     next();
   });
 
-  app.use('*', (req, res, next) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
+  app.use(notFoundHandler);
+
+  app.use(errorHandler);
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
 };
