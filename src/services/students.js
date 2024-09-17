@@ -31,3 +31,13 @@ export const getStudentById = async (id) => {
     throw err;
   }
 };
+
+export const createStudent = async (payload) => {
+  const student = await StudentsCollection.create(payload);
+  return student;
+};
+
+export const deleteStudent = async (id) => {
+  const student = await StudentsCollection.findByIdAndDelete(id);
+  return student;
+};
