@@ -6,19 +6,20 @@ import {
   updateStudents,
 } from '../services/students.js';
 import createHttpError from 'http-errors';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 
-export const getStudentsController = async (req, res, next) => {
-  try {
-    const students = await getAllStudents();
+export const getStudentsController = async (req, res) => {
+  const { page, perPage } = parsePaginationParams(req.query);
+  const students = await getAllStudents({
+    page,
+    perPage,
+  });
 
-    res.json({
-      status: 200,
-      message: 'Students fetched successfully',
-      data: students,
-    });
-  } catch (err) {
-    next(err);
-  }
+  res.json({
+    status: 200,
+    message: 'Students fetched successfully',
+    data: students,
+  });
 };
 
 export const getStudentByIdController = async (req, res) => {

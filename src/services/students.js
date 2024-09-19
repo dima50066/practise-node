@@ -1,19 +1,23 @@
 import { StudentsCollection } from '../db/models/students.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
-export const getAllStudents = async () => {
-  try {
-    const students = await StudentsCollection.find();
-    console.log('Fetched all students', students);
+export const getAllStudents = async ({ page, perPage }) => {
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
 
-    if (!students) {
-      throw new Error('No students found');
-    }
+  const studentsQuery = StudentsCollection.find();
+  const studentsCount = await StudentsCollection.find()
+    .merge(studentsQuery)
+    .countDocuments();
 
-    return students;
-  } catch (err) {
-    console.error('Failed to fetch students', err);
-    throw err;
-  }
+  const students = await studentsQuery.skip(skip).limit(limit).exec();
+
+  const paginationData = calculatePaginationData(studentsCount, perPage, page);
+
+  return {
+    data: students,
+    ...paginationData,
+  };
 };
 
 export const getStudentById = async (id) => {
