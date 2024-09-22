@@ -12,4 +12,10 @@ router.post(
   ctrlWrapper(registerUserController),
 );
 
+router.post(
+  '/login',
+  validateBody(registerUserSchema),
+  ctrlWrapper(registerUserController),
+);
+
 export default router;
