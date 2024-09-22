@@ -5,7 +5,7 @@ import pino from 'pino-http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { env } from './utils/env.js';
-import studentsRouter from './routers/students.js';
+import router from '../src/routers/index.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
@@ -34,7 +34,7 @@ export const startServer = () => {
     });
   });
 
-  app.use(studentsRouter);
+  app.use(router);
 
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
