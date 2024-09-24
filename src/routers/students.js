@@ -28,7 +28,7 @@ router.use(authenticate);
 router.get('/', checkRoles(ROLES.TEACHER), ctrlWrapper(getStudentsController));
 
 router.get(
-  '/students/:id',
+  '/:studentId',
   checkRoles(ROLES.TEACHER, ROLES.PARENT),
   isValidId,
   ctrlWrapper(getStudentByIdController),
@@ -41,22 +41,16 @@ router.post(
   ctrlWrapper(createStudentController),
 );
 
-router.post(
-  '/register',
-  validateBody(createStudentSchema),
-  ctrlWrapper(createStudentController),
-);
-
 router.put(
-  '/students/:id',
+  '/:studentId',
   checkRoles(ROLES.TEACHER),
   isValidId,
-  validateBody(createStudentSchema),
+  validateBody(updateStudentSchema),
   ctrlWrapper(upsertStudentController),
 );
 
 router.patch(
-  '/students/:id',
+  '/:studentId',
   checkRoles(ROLES.TEACHER, ROLES.PARENT),
   isValidId,
   validateBody(updateStudentSchema),
@@ -64,7 +58,7 @@ router.patch(
 );
 
 router.delete(
-  '/students/:id',
+  '/:studentId',
   checkRoles(ROLES.TEACHER),
   isValidId,
   ctrlWrapper(deleteStudentController),
