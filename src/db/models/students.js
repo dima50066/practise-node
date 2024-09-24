@@ -29,7 +29,6 @@ const studentsSchema = new Schema(
     parentId: {
       type: Schema.Types.ObjectId,
       ref: 'users',
-      required: true,
     },
   },
   {

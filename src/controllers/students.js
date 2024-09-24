@@ -33,8 +33,8 @@ export const getStudentsController = async (req, res) => {
 };
 
 export const getStudentByIdController = async (req, res) => {
-  const { id } = req.params;
-  const student = await getStudentById(id);
+  const { studentId } = req.params;
+  const student = await getStudentById(studentId);
 
   if (!student) {
     throw createHttpError(404, 'Student not found');
@@ -56,8 +56,8 @@ export const createStudentController = async (req, res) => {
 };
 
 export const deleteStudentController = async (req, res, next) => {
-  const { id } = req.params;
-  const student = await deleteStudent(id);
+  const { studentId } = req.params;
+  const student = await deleteStudent(studentId);
 
   if (!student) {
     next(createHttpError(404, 'Student not found'));
@@ -67,8 +67,8 @@ export const deleteStudentController = async (req, res, next) => {
 };
 
 export const upsertStudentController = async (req, res, next) => {
-  const { id } = req.params;
-  const result = await updateStudents(id, req.body, { upsert: true });
+  const { studentId } = req.params;
+  const result = await updateStudents(studentId, req.body, { upsert: true });
 
   if (!result) {
     next(createHttpError(404, 'Student not found'));
@@ -84,8 +84,8 @@ export const upsertStudentController = async (req, res, next) => {
 };
 
 export const patchStudentController = async (req, res) => {
-  const { id } = req.params;
-  const result = await updateStudents(id, req.body);
+  const { studentId } = req.params;
+  const result = await updateStudents(studentId, req.body);
 
   if (!result) {
     next(createHttpError(404, 'Student not found'));
