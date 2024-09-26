@@ -30,7 +30,7 @@ export const getAllStudents = async ({
     studentsQuery.where('avgMark').gte(filter.minAvgMark);
   }
 
-  const [studentsCount, students] = await Promise.all([
+  const [totalItems, students] = await Promise.all([
     StudentsCollection.find().merge(studentsQuery).countDocuments(),
     studentsQuery
       .skip(skip)
@@ -39,11 +39,16 @@ export const getAllStudents = async ({
       .exec(),
   ]);
 
-  const paginationData = calculatePaginationData(studentsCount, perPage, page);
+  const paginationData = calculatePaginationData(totalItems, perPage, page);
 
   return {
     data: students,
-    ...paginationData,
+    page,
+    perPage,
+    totalItems,
+    totalPages: paginationData.totalPages,
+    hasNextPage: paginationData.hasNextPage,
+    hasPreviousPage: paginationData.hasPreviousPage,
   };
 };
 
@@ -74,7 +79,7 @@ export const deleteStudent = async (id) => {
 };
 
 export const updateStudents = async (id, payload, options) => {
-  const rawResult = await StudentsCollection.findOneAndUpdate(
+  const student = await StudentsCollection.findOneAndUpdate(
     { _id: id },
     payload,
     {
@@ -84,10 +89,10 @@ export const updateStudents = async (id, payload, options) => {
     },
   );
 
-  if (!rawResult || !rawResult.value) return null;
+  if (!student || !student.value) return null;
 
   return {
-    student: rawResult.value,
-    isNew: Boolean(!rawResult.lastErrorObject.upserted),
+    student: student.value,
+    isNew: Boolean(!student.lastErrorObject.upserted),
   };
 };

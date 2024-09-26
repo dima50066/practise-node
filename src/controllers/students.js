@@ -11,6 +11,9 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { env } from '../utils/env.js';
+
 export const getStudentsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
 
@@ -18,7 +21,7 @@ export const getStudentsController = async (req, res) => {
 
   const filter = parseFilterParams(req.query);
 
-  const students = await getAllStudents({
+  const studentsData = await getAllStudents({
     page,
     perPage,
     sortOrder,
@@ -29,7 +32,7 @@ export const getStudentsController = async (req, res) => {
   res.json({
     status: 200,
     message: 'Students fetched successfully',
-    data: students,
+    data: studentsData,
   });
 };
 
@@ -91,7 +94,11 @@ export const patchStudentController = async (req, res) => {
   let photoUrl;
 
   if (photo) {
-    photoUrl = await saveFileToUploadDir(photo);
+    if (env('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
 
   const result = await updateStudents(studentId, {
