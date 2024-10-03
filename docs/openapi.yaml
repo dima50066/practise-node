@@ -19,7 +19,6 @@ paths:
   /students:
     get:
       $ref: ../swagger/paths/students/get.yaml
-    #додаємо ще один шлях
     post:
       $ref: ../swagger/paths/students/post.yaml
   /students/{id}:
